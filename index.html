@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XON SAROY — 3D Rasmiy Veb-Sayti</title>
+
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Three.js 3D kutubxonasi -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: #0b0c10;
+      color: #ffffff;
+      overflow-x: hidden;
+    }
+
+    /* 3D Canvas ko'rinishi */
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Asosiy konteyner */
+    .hero-container {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 2rem;
+      background: radial-gradient(circle at center, rgba(11, 12, 16, 0.4) 0%, rgba(11, 12, 16, 0.9) 100%);
+    }
+
+    /* LOGO va Sarlavha */
+    .title-box h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      background: linear-gradient(135deg, #d4af37 0%, #fff 50%, #aa7c11 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+    }
+
+    .title-box p {
+      font-size: 1.2rem;
+      color: #c5c6c7;
+      margin-bottom: 3rem;
+      letter-spacing: 1px;
+    }
+
+    /* 3D Kartochkalar / Tugmalar Paneli */
+    .buttons-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    /* 3D Tugma effekti */
+    .btn-3d {
+      position: relative;
+      flex: 1 1 300px;
+      max-width: 380px;
+      padding: 1.5rem 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      border-radius: 16px;
+      backdrop-filter: blur(12px);
+      text-decoration: none;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+    }
+
+    .btn-3d::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+      transition: 0.5s;
+    }
+
+    .btn-3d:hover::before {
+      left: 100%;
+    }
+
+    .btn-3d:hover {
+      transform: translateY(-10px) scale(1.03);
+      border-color: #d4af37;
+      box-shadow: 0 25px 45px rgba(212, 175, 55, 0.25);
+      background: rgba(212, 175, 55, 0.1);
+    }
+
+    .btn-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #d4af37, #aa7c11);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.8rem;
+      color: #0b0c10;
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-text {
+      text-align: left;
+    }
+
+    .btn-text h3 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.3rem;
+    }
+
+    .btn-text p {
+      font-size: 0.85rem;
+      color: #66fcf1;
+    }
+
+    /* Footer */
+    footer {
+      position: absolute;
+      bottom: 1.5rem;
+      z-index: 2;
+      color: #45a29e;
+      font-size: 0.85rem;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 600px) {
+      .title-box h1 {
+        font-size: 2.5rem;
+      }
+      .buttons-wrapper {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 3D Orqa fon -->
+  <div id="canvas-container"></div>
+
+  <!-- Asosiy Kontent -->
+  <div class="hero-container">
+    <div class="title-box">
+      <h1>XON SAROY</h1>
+      <p>Zamonaviy va Muhtasham Turar-Joy Majmualari</p>
+    </div>
+
+    <!-- Havola Tugmalari -->
+    <div class="buttons-wrapper">
+      
+      <!-- Excel / Bloklar Ro'yxati Tugmasi -->
+      <a href="https://docs.google.com/spreadsheets/d/1jJrBd71MsYsnSdTBQH6eG84PLEECYUEkjuf_s5zM3ho/edit?usp=sharing" target="_blank" class="btn-3d">
+        <div class="btn-icon">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+        <div class="btn-text">
+          <h3>Bloklar Ro'yxati</h3>
+          <p>Excel Jadvalini ko'rish <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></p>
+        </div>
+      </a>
+
+      <!-- Google Form / Ariza Qoldirish Tugmasi -->
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdvVA6hkxwJkJ7vrqQa2WH616ErlNBdsfvyv8hw5dX2mYFx-w/viewform?usp=publish-editor" target="_blank" class="btn-3d">
+        <div class="btn-icon">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <div class="btn-text">
+          <h3>So'rovnoma / Ariza</h3>
+          <p>Google Form shakli <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i></p>
+        </div>
+      </a>
+
+    </div>
+
+    <footer>
+      &copy; 2026 XON SAROY. Barcha huquqlar himoyalangan.
+    </footer>
+  </div>
+
+  <!-- Three.js 3D interaktiv skripti -->
+  <script>
+    // 3D Sahnani sozlash
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+    // Bino bloklarini ifodalovchi 3D Kublar guruhi
+    const group = new THREE.Group();
+    const geometry = new THREE.BoxGeometry(1, 1, 1);
+    
+    // Oltin va qorong'u rangli materiallar
+    const goldMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0xd4af37, 
+      metalness: 0.8, 
+      roughness: 0.2 
+    });
+    const darkMaterial = new THREE.MeshStandardMaterial({ 
+      color: 0x1f2833, 
+      metalness: 0.5, 
+      roughness: 0.5 
+    });
+
+    // 3D Muzokaralar/Bloklar to'plami
+    for (let i = 0; i < 40; i++) {
+      const isGold = Math.random() > 0.6;
+      const mesh = new THREE.Mesh(geometry, isGold ? goldMaterial : darkMaterial);
+      
+      mesh.position.x = (Math.random() - 0.5) * 15;
+      mesh.position.y = (Math.random() - 0.5) * 15;
+      mesh.position.z = (Math.random() - 0.5) * 15;
+      
+      mesh.rotation.x = Math.random() * Math.PI;
+      mesh.rotation.y = Math.random() * Math.PI;
+      
+      const scale = Math.random() * 0.8 + 0.4;
+      mesh.scale.set(scale, scale * (Math.random() * 2 + 1), scale);
+      
+      group.add(mesh);
+    }
+    scene.add(group);
+
+    // Yorug'lik effektlari
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+
+    const pointLight = new THREE.PointLight(0xd4af37, 2, 50);
+    pointLight.position.set(5, 5, 5);
+    scene.add(pointLight);
+
+    camera.position.z = 8;
+
+    // Kursor harakatiga 3D javob reaksiyasi
+    let mouseX = 0;
+    let mouseY = 0;
+
+    document.addEventListener('mousemove', (event) => {
+      mouseX = (event.clientX / window.innerWidth) - 0.5;
+      mouseY = (event.clientY / window.innerHeight) - 0.5;
+    });
+
+    // Animatsiya tsikli
+    function animate() {
+      requestAnimationFrame(animate);
+
+      group.rotation.y += 0.003;
+      group.rotation.x += 0.001;
+
+      // Sichqoncha bo'yicha silliq burilish
+      group.rotation.y += mouseX * 0.05;
+      group.rotation.x += mouseY * 0.05;
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Ekran o'lchami o'zgarganda yangilash
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>
